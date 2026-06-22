@@ -1,0 +1,13 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // files/** : anyone signed in can read (download) files.
+    // Only admins can upload/delete (checked via their Firestore profile role).
+    match /files/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        firestore.get(/databases/(default)/documents/profiles/$(request.auth.uid)).data.role == 'admin';
+    }
+  }
+}

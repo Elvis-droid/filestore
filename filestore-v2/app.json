@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "FileStore",
+    "slug": "filestore-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1E3A5F"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1E3A5F"
+      },
+      "package": "com.filestore.app",
+      "permissions": [
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
+        "INTERNET",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.filestore.app"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "color": "#1E3A5F"
+        }
+      ]
+    ],
+    "scheme": "filestore",
+    "extra": {
+      "eas": {
+        "projectId": "c5a57e4a-eb37-483e-8d75-7d60d6b160e2"
+      }
+    },
+    "owner": "murdas-team"
+  }
+}

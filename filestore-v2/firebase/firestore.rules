@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // profiles: a user can read/update their own profile. Admins can read all.
+    match /profiles/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // files: anyone signed in can read active files. Only admins can write.
+    match /files/{fileId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // payment_requests: a user can read/create their own. Admins can read/update all.
+    match /payment_requests/{requestId} {
+      allow read: if isSignedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.user_id == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // access_grants: a user can read their own. Only admins can write/delete (revoke).
+    match /access_grants/{grantId} {
+      allow read: if isSignedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // downloads: a user can create/read their own log entries. Admins can read all.
+    match /downloads/{downloadId} {
+      allow read: if isSignedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.user_id == request.auth.uid;
+    }
+  }
+}
